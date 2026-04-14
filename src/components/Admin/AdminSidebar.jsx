@@ -2,32 +2,31 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import AnimatedLogo from '../Sidebar/AnimatedLogo';
-import { FaChevronRight, FaChevronLeft, FaSignOutAlt, FaUsers, FaUserPlus, FaChartBar, FaCog, FaHome, FaCalendarAlt, FaFileAlt, FaFolderOpen } from 'react-icons/fa';
+import { FaChevronRight, FaChevronLeft, FaSignOutAlt, FaUsers, FaUserPlus, FaChartBar, FaCog, FaHome, FaCalendarAlt, FaFileAlt, FaFolderOpen, FaUserCircle } from 'react-icons/fa';
 import { useNavigate, NavLink } from 'react-router-dom';
 
 export const AdminSidebarItem = ({ icon, text, path, expanded = true, onClick }) => {
-  const { t } = useLanguage();
-  const isActive = window.location.pathname === path;
-
   return (
     <li>
       {path ? (
         <NavLink
           to={path}
-          className={`flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors ${
-            isActive ? 'bg-gray-700' : ''
-          }`}
+          className={({ isActive }) => 
+            `flex items-center px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition-all duration-200 group mb-1 ${
+              isActive ? 'bg-slate-800 text-blue-400 font-semibold shadow-sm border border-slate-700' : ''
+            }`
+          }
         >
-          <span className="flex-shrink-0">{icon}</span>
-          {expanded && <span className="ml-3">{text}</span>}
+          <span className="flex-shrink-0 transition-transform duration-200 group-hover:scale-110">{icon}</span>
+          {expanded && <span className="ml-3 text-sm tracking-wide">{text}</span>}
         </NavLink>
       ) : (
         <button
           onClick={onClick}
-          className="flex items-center w-full px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
+          className="flex items-center w-full px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition-all duration-200 group mb-1"
         >
-          <span className="flex-shrink-0">{icon}</span>
-          {expanded && <span className="ml-3">{text}</span>}
+          <span className="flex-shrink-0 transition-transform duration-200 group-hover:scale-110">{icon}</span>
+          {expanded && <span className="ml-3 text-sm tracking-wide">{text}</span>}
         </button>
       )}
     </li>
@@ -51,100 +50,151 @@ const AdminSidebar = ({ expanded, setExpanded }) => {
 
   return (
     <>
-      {/* Mobile menu button (to be implemented) */}
-      <div className="sm:hidden fixed top-2 left-2 z-50">
-        {/* Add a hamburger menu here if desired */}
-      </div>
-      <aside className={`fixed top-0 left-0 h-full bg-gray-800 shadow-lg z-50 transition-all duration-300 ${expanded ? 'w-64' : 'w-20'} hidden sm:block`}>
+      <aside className={`fixed top-0 left-0 h-screen bg-[#0f172a] shadow-2xl z-50 transition-all duration-300 border-r border-slate-800 ${expanded ? 'w-64' : 'w-20'} hidden sm:block`}>
         <nav className="h-full flex flex-col">
-          <div className="p-4 pb-2 flex justify-between items-center">
-            <AnimatedLogo isVisible={expanded} />
-            <button 
-              className="p-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white"
-              onClick={() => setExpanded(!expanded)}
-            >
-              {expanded ? <FaChevronRight /> : <FaChevronLeft />}
-            </button>
+          {/* Header */}
+          <div className={`p-4 flex ${expanded ? 'flex-col items-center' : 'justify-between items-center'} bg-[#0f172a] sticky top-0 z-10 border-b border-slate-800/50`}>
+            {expanded && (
+              <button 
+                className="absolute right-4 top-4 p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors border border-slate-700"
+                onClick={() => setExpanded(false)}
+              >
+                <FaChevronLeft size={14} />
+              </button>
+            )}
+            
+            <div className="overflow-hidden w-full text-center">
+               <AnimatedLogo isVisible={expanded} />
+               {!expanded && (
+                 <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white mx-auto shadow-lg shadow-blue-500/20">
+                    <FaHome size={20} />
+                 </div>
+               )}
+            </div>
+            
+            {!expanded && (
+              <button 
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all border border-slate-700 mx-auto mt-2"
+                onClick={() => setExpanded(true)}
+              >
+                <FaChevronRight size={14} />
+              </button>
+            )}
           </div>
 
-          <ul className="flex-1 px-3 space-y-1">
+          {/* Navigation - Scrollable */}
+          <ul className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
             <AdminSidebarItem 
-              icon={<FaHome className="w-6 h-6" />} 
+              icon={<FaHome className="w-5 h-5" />} 
               text="Dashboard"
               path="/admin/dashboard"
               expanded={expanded}
             />
+            <div className="my-4 border-t border-slate-800/50 mx-2" />
             <AdminSidebarItem 
-              icon={<FaUsers className="w-6 h-6" />} 
+              icon={<FaUsers className="w-5 h-5" />} 
               text="Manage Employees"
               path="/admin/employees"
               expanded={expanded}
             />
             <AdminSidebarItem 
-              icon={<FaUserPlus className="w-6 h-6" />} 
+              icon={<FaUserPlus className="w-5 h-5" />} 
               text="Add Employee"
               path="/admin/add-employee"
               expanded={expanded}
             />
             <AdminSidebarItem 
-              icon={<FaCalendarAlt className="w-6 h-6" />} 
+              icon={<FaCalendarAlt className="w-5 h-5" />} 
               text="Leave Requests"
               path="/admin/leave-requests"
               expanded={expanded}
             />
             <AdminSidebarItem 
-              icon={<FaChartBar className="w-6 h-6" />} 
+              icon={<FaChartBar className="w-5 h-5" />} 
               text="Reports"
               path="/admin/reports"
               expanded={expanded}
             />
             <AdminSidebarItem 
-              icon={<FaFileAlt className="w-6 h-6" />} 
+              icon={<FaFileAlt className="w-5 h-5" />} 
               text="Daily Reports"
               path="/admin/daily-reports"
               expanded={expanded}
             />
             <AdminSidebarItem 
-              icon={<FaFolderOpen className="w-6 h-6" />} 
+              icon={<FaFolderOpen className="w-5 h-5" />} 
               text="Projects"
               path="/admin/projects"
               expanded={expanded}
             />
             <AdminSidebarItem 
-              icon={<FaCog className="w-6 h-6" />} 
+              icon={<FaCog className="w-5 h-5" />} 
               text="Settings"
               path="/admin/AdminSettings"
               expanded={expanded}
             />
           </ul>
 
-          {/* User details */}
-          <div className="border-t border-gray-700 flex p-3">
-            <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white">
-              {session?.user?.email?.[0]?.toUpperCase() || 'A'}
-            </div>
-            <div className={`flex justify-between items-center overflow-hidden transition-all duration-300 ${expanded ? "w-52 ml-3" : "w-0"}`}>
-              <div className="leading-4">
-                <h4 className="font-semibold text-white">{session?.user?.email?.split('@')[0] || 'Admin'}</h4>
-                <span className="text-xs text-gray-400">{session?.user?.email || 'admin@example.com'}</span>
+          {/* Footer - Profile */}
+          <div className="p-4 border-t border-slate-800/50 bg-[#0f172a]">
+            {expanded ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-700/30">
+                  <div className="w-9 h-9 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                    <FaUserCircle className="w-7 h-7" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-200 truncate capitalize">
+                      {session?.user?.email?.split('@')[0] || 'Admin'}
+                    </p>
+                    <p className="text-[10px] text-slate-500 truncate lowercase">
+                      {session?.user?.email}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-red-500/10 transition-all duration-200 rounded-xl border border-red-500/10 group"
+                >
+                  <FaSignOutAlt className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                  <span>{t('signOut')}</span>
+                </button>
               </div>
-            </div>
-          </div>
-
-          {/* Sign Out Button */}
-          <div className="border-t border-gray-700 p-3">
-            <button
-              onClick={handleSignOut}
-              className="w-full flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors rounded-lg"
-            >
-              <FaSignOutAlt className="w-5 h-5" />
-              {expanded && <span className="ml-3">{t('signOut')}</span>}
-            </button>
+            ) : (
+              <div className="flex flex-col gap-4 items-center">
+                <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-blue-400 border border-slate-700/50">
+                  <FaUserCircle size={24} />
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="p-2.5 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
+                  title={t('signOut')}
+                >
+                  <FaSignOutAlt size={20} />
+                </button>
+              </div>
+            )}
           </div>
         </nav>
       </aside>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #1e293b;
+          border-radius: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #334155;
+        }
+      `}} />
     </>
   );
 };
 
-export default AdminSidebar; 
+export default AdminSidebar;
