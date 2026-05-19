@@ -136,7 +136,12 @@ const PerformanceAnalytics = () => {
       if (dateRange.start) attendanceStart = new Date(dateRange.start);
       const { data: attendanceRecords, error: attendanceError } = await supabase
         .from('attendance')
-        .select('*')
+        .select(`
+          *,
+          member:member_id (
+            name
+          )
+        `)
         .gte('date', attendanceStart.toISOString());
       if (attendanceError) throw attendanceError;
 
@@ -410,6 +415,8 @@ const PerformanceAnalytics = () => {
     const allEmployeeNames = {};
     allEmployees.forEach(e => { allEmployeeNames[e.id] = e.name; });
     const employeeNames = { ...allEmployeeNames };
+    // Extract names from attendance records' member relation
+    attendanceRecords.forEach(a => { if (a.member_id && a.member?.name) employeeNames[a.member_id] = a.member.name; });
     // Overwrite with names from reports if available
     reports.forEach(r => { if (r.member_id && r.full_name) employeeNames[r.member_id] = r.full_name; });
     employees.forEach(empId => {
